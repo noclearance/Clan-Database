@@ -1,0 +1,5 @@
+{
+  "name": "FrontEnd React dashboard",
+  "description": "A web application simulating a Discord bot for managing an Old School RuneScape clan, featuring event scheduling, hiscores lookup, drop logs, and gear setup recommendations powered by Gemini.",
+  "requestFramePermissions": []
+}

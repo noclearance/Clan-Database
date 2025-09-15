@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OSRS Clan Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.1.1",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
+    "react/": "https://aistudiocdn.com/react@^19.1.1/",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.17.0",
+    "console": "https://aistudiocdn.com/console@^0.7.2"
+  }
+}
+</script>
+  <style>
+    :root {
+      --bg-gradient-start: #180808;
+      --bg-gradient-end: #000000;
+      --bg-card: #211a1a;
+      --color-gold: #FFD700;
+      --color-silver: #C0C0C0;
+      --color-bronze: #CD7F32;
+      --color-blood-red: #a11d1d;
+      --color-dragonfire: #ff6a00;
+      --color-green: var(--color-dragonfire); /* Remap green to dragonfire orange */
+      --font-header: 'Press Start 2P', cursive;
+      --font-body: 'Inter', sans-serif;
+    }
+    body {
+      background-color: var(--bg-gradient-start);
+      background-image: linear-gradient(180deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+      font-family: var(--font-body);
+      color: #e0e0e0;
+    }
+    .font-header { font-family: var(--font-header); }
+    .font-sans { font-family: var(--font-body); }
+    
+    @keyframes sparkle {
+      0%, 100% { text-shadow: 0 0 2px var(--color-gold), 0 0 5px var(--color-gold), 0 0 10px var(--color-gold); opacity: 1; }
+      50% { text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 20px #fff; opacity: 0.8; }
+    }
+    @keyframes shimmer {
+      0% { opacity: 0.7; }
+      50% { opacity: 1; transform: scale(1.1); }
+      100% { opacity: 0.7; }
+    }
+    @keyframes float {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+    }
+    @keyframes shine-effect {
+      0% { transform: translateX(-150%) skewX(-25deg); }
+      100% { transform: translateX(150%) skewX(-25deg); }
+    }
+    @keyframes xp-icon-bob {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); }
+      50% { transform: translate(-50%, -65%) scale(1.1); }
+    }
+
+    .animate-sparkle { animation: sparkle 2s ease-in-out infinite; }
+    .animate-shimmer { animation: shimmer 2.5s ease-in-out infinite; }
+    .animate-float { animation: float 15s linear infinite; }
+    
+    .parchment-bg {
+      background-color: #fdf5e6;
+      background-image: linear-gradient(315deg, #fdf5e6 0%, #e9d8b7 74%);
+      color: #4a2c0c;
+      border: 2px solid #c8b796;
+      box-shadow: inset 0 0 10px #00000033;
+    }
+    .card-bevel {
+      border-radius: 8px;
+      border: 2px solid #3a2a2a;
+      background-color: var(--bg-card);
+      box-shadow: inset 0 1px 1px #44333390, inset 0 -1px 1px #11000090, 0 4px 8px #00000080;
+    }
+    .player-card {
+        background-color: #332a2a90;
+        border-radius: 8px;
+        border: 2px solid transparent;
+        transition: all 0.2s ease-in-out;
+    }
+    .player-card.rank-1 {
+        border-color: var(--color-gold);
+        box-shadow: 0 0 10px #ffd70066;
+    }
+    .player-card.rank-2 {
+        border-color: var(--color-silver);
+    }
+    .player-card.rank-3 {
+        border-color: var(--color-bronze);
+    }
+    .progress-bar-glossy {
+        border-radius: 6px;
+        background: #111;
+        padding: 2px;
+        box-shadow: inset 1px 1px 3px #00000080;
+    }
+    .progress-bar-glossy > div {
+        background-image: linear-gradient(to bottom, #ff8a3d, var(--color-dragonfire));
+    }
+     .stone-tile {
+        background-color: #2a2a2a;
+        background-image: linear-gradient(147deg, #3a3a3a 0%, #1c1c1c 74%);
+        border: 1px solid #4a4a4a;
+        box-shadow: inset 0 0 5px #00000080, 2px 2px 3px #00000050;
+        transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+    }
+    .stone-tile:hover {
+        transform: scale(1.08);
+        box-shadow: inset 0 0 10px var(--color-dragonfire), 4px 4px 6px #00000060;
+    }
+    .gold-divider {
+      border: 0;
+      height: 2px;
+      background-image: linear-gradient(to right, transparent, var(--color-gold), transparent);
+    }
+    .bingo-completed-glow {
+        background-color: #ff6a0020;
+        box-shadow: inset 0 0 20px var(--color-dragonfire);
+    }
+    .bingo-completed-check {
+        color: var(--color-dragonfire);
+        text-shadow: 0 0 8px var(--color-dragonfire);
+        animation: shimmer 1.5s ease-in-out infinite;
+    }
+    .tooltip-content {
+        visibility: hidden;
+        opacity: 0;
+        transition: opacity 0.2s, visibility 0.2s;
+    }
+    .tooltip-container:hover .tooltip-content {
+        visibility: visible;
+        opacity: 1;
+    }
+    .gear-icon-container {
+      position: relative;
+      overflow: hidden;
+    }
+    .gear-icon-container::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.3) 50%,
+        rgba(255, 255, 255, 0) 100%
+      );
+      transform: translateX(-150%) skewX(-25deg);
+      pointer-events: none;
+    }
+    .tooltip-container:hover .gear-icon-container::after {
+      animation: shine-effect 0.85s ease-in-out;
+    }
+    .xp-icon {
+      position: absolute;
+      top: 50%;
+      height: 24px;
+      width: 24px;
+      transition: left 1s ease-out, opacity 0.5s;
+      animation: xp-icon-bob 1.5s ease-in-out infinite;
+      z-index: 10;
+      pointer-events: none;
+      filter: drop-shadow(0 0 3px var(--color-gold));
+    }
+  </style>
+</head>
+  <body class="bg-[var(--bg-gradient-start)]">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
